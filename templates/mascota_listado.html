@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+{% block mascota_listado %}
+<main>
+
+<a href="{% url 'crear_mascota' %}" class="btn btn-primary">Crear nueva mascota</a>
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for mascota in mascotas %}
+            <a class="col" href="{% url 'modificar_mascota' mascota.pk %}">
+                <div class="card shadow-sm"> <svg aria-label="Placeholder: Thumbnail"
+                        class="bd-placeholder-img card-img-top" height="225" preserveAspectRatio="xMidYMid slice"
+                        role="img" width="100%" xmlns="http://www.w3.org/2000/svg">
+                        <title>Placeholder</title>
+                        <rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef"
+                            dy=".3em">Thumbnail</text>
+                    </svg>
+                    <div class="card-body">
+                        <p class="card-text">{{ mascota.nombre }}</p>
+                        <p class="card-text">{{ mascota.estado }}</p>
+                        <p class="card-text">{{ mascota.imagen }}</p>
+                        <p class="card-text">{{ mascota.usuario.nombre }}</p>
+                        
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</main>
+
+{% endblock mascota_listado %}
