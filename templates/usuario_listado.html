@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+{% block usuario_listado %}
+<main>
+
+<a href="{% url 'crear_usuario' %}" class="btn btn-primary">Crear nuevo usuario</a>
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for usuario in usuarios %}
+            <a class="col" href="{% url 'modificar_usuario' usuario.pk %}">
+                <div class="card shadow-sm"> <svg aria-label="Placeholder: Thumbnail"
+                        class="bd-placeholder-img card-img-top" height="225" preserveAspectRatio="xMidYMid slice"
+                        role="img" width="100%" xmlns="http://www.w3.org/2000/svg">
+                        <title>Placeholder</title>
+                        <rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef"
+                            dy=".3em">Thumbnail</text>
+                    </svg>
+                    <div class="card-body">
+                        <p class="card-text">{{ usuario.nombre }}</p>
+                        <p class="card-text">{{ usuario.apellido }}</p>
+                        <p class="card-text">{{ usuario.email }}</p>
+                        <p class="card-text">{{ usuario.telefono }}</p>
+                        
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</main>
+
+{% endblock usuario_listado %}
