@@ -1,12 +1,2 @@
-{% extends 'index.html' %}
-{% block usuario_modificacion %}
-<main class="form-signin w-100 m-auto">
-<div>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-primary w-100 py-2" type="submit">Crear</button>
-    </form>
-</div>
-</main>
-{% endblock usuario_modificacion %}
+{% extends 'usuario_formulario.html' %}
+{% block actualizar_usuarios %}Actualizar{% endblock actualizar_usuarios %}

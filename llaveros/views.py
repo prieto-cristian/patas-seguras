@@ -20,7 +20,7 @@ class UsuarioListView(ListView):
 class UsuarioCreateView(CreateView):
     model = Usuario
     form_class = UsuarioForm
-    template_name = 'usuario_creacion.html'
+    template_name = 'usuario_formulario.html'
     success_url = reverse_lazy('listar_usuarios')
 
 

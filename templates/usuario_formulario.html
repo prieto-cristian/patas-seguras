@@ -5,7 +5,8 @@
     <form method="post"> 
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary w-100 py-2" type="submit">Crear</button>
+        <button class="btn btn-primary w-50 py-2" type="submit">{% block actualizar_usuarios %}Crear{% endblock %}</button>
+        <a class="btn btn-secondary w-50 py-2" href="{% url 'listar_usuarios' %}">Cancelar</a>
     </form>
 </div>
 </main>
