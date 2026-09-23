@@ -10,4 +10,4 @@ class UsuarioForm(forms.ModelForm):
 class MascotaForm(forms.ModelForm):
     class Meta:
         model = Mascota
-        fields = ("nombre", "estado", "imagen", "usuario")
+        fields = ("nombre", "imagen", "usuario")
