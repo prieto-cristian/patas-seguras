@@ -1,14 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.views import FormView
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm
-from .models import Mascota
+from .models import Mascota, Llavero
 
 # Create your views here.
 
@@ -78,3 +78,10 @@ class IniciarSesionView(FormView):
 def cerrar_sesion(request):
     logout(request)
     return redirect("inicio")
+
+
+class LlaveroDetailView(DetailView):
+    model = Llavero
+    template_name = "llavero_detalle.html"
+    context_object_name = "llavero"
+    slug_field = 'identificador_publico'
