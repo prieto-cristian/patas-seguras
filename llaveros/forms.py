@@ -1,10 +1,12 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from .models import Usuario, Mascota
 
-class UsuarioForm(forms.ModelForm):
+class UsuarioRegistroForm(UserCreationForm):
     class Meta:
-        model = Usuario
-        fields = ("nombre", "apellido", "email", "telefono")
+        model = User
+        fields = ("username", "first_name", "last_name", "password1", "password2")
 
 
 class MascotaForm(forms.ModelForm):

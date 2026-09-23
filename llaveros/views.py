@@ -2,7 +2,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import UsuarioForm, MascotaForm
+from django.contrib.auth.views import FormView
+from django.contrib.auth import login, logout
+from .forms import UsuarioRegistroForm, MascotaForm
 from .models import Usuario, Mascota
 
 # Create your views here.
@@ -19,14 +21,14 @@ class UsuarioListView(ListView):
 
 class UsuarioCreateView(CreateView):
     model = Usuario
-    form_class = UsuarioForm
+    form_class = UsuarioRegistroForm
     template_name = 'usuario_formulario.html'
     success_url = reverse_lazy('listar_usuarios')
 
 
 class UsuarioUpdateView(UpdateView):
     model = Usuario
-    form_class = UsuarioForm
+    form_class = UsuarioRegistroForm
     template_name = 'usuario_modificacion.html'
     success_url = reverse_lazy('listar_usuarios')
 
@@ -49,3 +51,14 @@ class MascotaUpdateView(UpdateView):
     form_class = MascotaForm
     template_name = "mascota_modificacion.html"
     success_url = reverse_lazy("listar_mascotas")
+
+
+class RegistraseView(FormView):
+    form_class = UsuarioRegistroForm
+    template_name = "registrarse.html"
+    success_url = reverse_lazy("listar_mascotas")
+
+    def form_valid(self, form: UsuarioRegistroForm):
+        user = form.save()
+        login(self.request, user)
+        return super().form_valid(form)

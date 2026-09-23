@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% block registrarse %}
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button>Registrarse</button>
+</form>
+{% endblock registrarse %}
