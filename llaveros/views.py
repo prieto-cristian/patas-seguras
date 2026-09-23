@@ -1,12 +1,14 @@
-from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.views import FormView
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
-from .forms import UsuarioRegistroForm, MascotaForm
-from .models import Usuario, Mascota
+from django.contrib.auth.models import User
+from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm
+from .models import Mascota
 
 # Create your views here.
 
@@ -14,24 +16,22 @@ def inicio(request):
     return render(request, 'index.html')
 
 
-class UsuarioListView(ListView):
-    model = Usuario
-    context_object_name = "usuarios"
-    template_name = "usuario_listado.html"
-
-
-class UsuarioCreateView(CreateView):
-    model = Usuario
-    form_class = UsuarioRegistroForm
-    template_name = 'usuario_formulario.html'
-    success_url = reverse_lazy('listar_usuarios')
-
-
-class UsuarioUpdateView(UpdateView):
-    model = Usuario
-    form_class = UsuarioRegistroForm
+class UsuarioUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UsuarioUpdateForm
     template_name = 'usuario_modificacion.html'
-    success_url = reverse_lazy('listar_usuarios')
+    success_url = reverse_lazy('listar_mascotas')
+    login_url = 'login'  # Redirige a login si no está autenticado
+
+    def get_object(self, queryset=None):
+        # Retorna el usuario actualmente logueado
+        return self.request.user
+
+    def form_valid(self, form):
+        # Verificación adicional de seguridad
+        if form.instance.pk != self.request.user.pk:
+            raise PermissionDenied("No tienes permiso para editar este usuario")
+        return super().form_valid(form)
 
 
 class MascotaListView(ListView):

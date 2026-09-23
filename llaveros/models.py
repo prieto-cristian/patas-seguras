@@ -3,21 +3,12 @@ from django.db.models import ImageField, ForeignKey, CASCADE, BooleanField
 from django.db.models.fields import (CharField, EmailField,
                                      PositiveIntegerField,
                                      DateTimeField)
+from django.contrib.auth.models import User
 
 
 # Create your models here.
-class Usuario(models.Model):
-    nombre = CharField(max_length=50)
-    apellido = CharField(max_length=50)
-    email = EmailField(unique=True)
-    telefono = CharField(max_length=50)
-
-    def __str__(self):
-        return f"{self.nombre} - {self.apellido}"
-
-
 class Direccion(models.Model):
-    usuario = ForeignKey(Usuario, on_delete=CASCADE,
+    usuario = ForeignKey(User, on_delete=CASCADE,
                          related_name="direcciones")
     localidad = CharField(max_length=50)
     calle = CharField(max_length=100)
@@ -25,7 +16,7 @@ class Direccion(models.Model):
 
 
 class Mascota(models.Model):
-    usuario = ForeignKey(Usuario, on_delete=CASCADE, related_name="mascotas")
+    usuario = ForeignKey(User, on_delete=CASCADE, related_name="mascotas")
     nombre = CharField(max_length=50)
     imagen = ImageField(max_length=254, blank=True)
     sePerdio = BooleanField(default=False)
