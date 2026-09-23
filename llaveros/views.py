@@ -1,8 +1,9 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.views import FormView
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from .forms import UsuarioRegistroForm, MascotaForm
 from .models import Usuario, Mascota
@@ -62,3 +63,18 @@ class RegistraseView(FormView):
         user = form.save()
         login(self.request, user)
         return super().form_valid(form)
+
+
+class IniciarSesionView(FormView):
+    template_name = "iniciar_sesion.html"
+    form_class = AuthenticationForm
+    success_url = reverse_lazy("listar_mascotas")
+
+    def form_valid(self, form : AuthenticationForm):
+        login(self.request, form.get_user())
+        return super().form_valid(form)
+
+
+def cerrar_sesion(request):
+    logout(request)
+    return redirect("inicio")
