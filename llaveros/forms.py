@@ -57,3 +57,14 @@ class LlaveroForm(forms.ModelForm):
     class Meta:
         model = Llavero
         fields = ("mascota",)
+
+
+class LlaveroFormActivacion(forms.Form):
+    codigo_activacion = forms.CharField(
+        label="Código de activación",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Ingresá el código de activación"
+        })
+    )

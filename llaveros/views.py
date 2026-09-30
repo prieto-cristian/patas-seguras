@@ -1,3 +1,6 @@
+from math import trunc
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -9,7 +12,7 @@ from django.contrib.auth.views import FormView
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm
+from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm, LlaveroFormActivacion
 from .models import Mascota, Llavero
 
 # Create your views here.
@@ -105,13 +108,53 @@ class LlaveroView(View):
 
             case "SIN_MASCOTA":
                 return redirect("llavero_sin_mascota")
-        return Http404("No se encontro")
+        return HttpResponseNotFound("No se encontro")
+
+class LlaveroVincularView(View):
+
+    def get(self, request, **kwargs):
+        llavero = get_object_or_404(Llavero,identificador_publico=kwargs['slug'])
+
+        form = LlaveroFormActivacion()
+
+        return render(request,"vincular_llavero.html",{
+                "form": form,
+                "llavero": llavero,
+                "slug" : llavero.identificador_publico,
+        })
+
+    def post(self, request, **kwargs):
+        llavero = get_object_or_404(Llavero,identificador_publico=kwargs['slug'],
+                                    estado="NUEVO")
+
+        form = LlaveroFormActivacion(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data["codigo_activacion"]
+            if llavero.codigo_activacion == codigo:
+                llavero.usuario = request.user
+                llavero.estado = "VINCULADO"
+                llavero.save()
+
+                return redirect("registro_llavero_exitoso")
+
+        return render(request,"vincular_llavero.html",{
+                "form": form,
+                "llavero": llavero,
+                "slug": llavero.identificador_publico,
+                "error": "El código de activación no es válido.",
+        })
 
 
-class LlaveroVincularView(TemplateView):
-    template_name = 'vincular_llavero.html'
+class MensajeLlaveroExitosoView(TemplateView):
+    template_name = "mensaje_llavero_vinculado.html"
 
-    def post(self, slug):
-        llavero = get_object_or_404(Llavero, identificador_publico=slug)
-        print(f"LLAVERO: {llavero}")
-        pass
+
+class MascotaDetailView(DetailView):
+    template_name = "mostrar_informacion_mascota.html"
+    model = Mascota
+
+    def get_queryset(self):
+        mascota = get_object_or_404(Mascota, llaveros_identificador_publico=self.kwargs["slug"])
+        if not mascota:
+            return HttpResponseNotFound("NO SE ENCONTRO A LA MASCOTA")
+        return None

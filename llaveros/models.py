@@ -56,9 +56,9 @@ class Llavero(models.Model):
         unique=True,
         blank=True  # Se genera automáticamente
     )
-    fecha_creacion = models.DateTimeField(
-        auto_now_add=True
-    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    usuario = models.ForeignKey(User, null=True, blank=True, on_delete=CASCADE, related_name="llaveros")
 
     class Meta:
         verbose_name = "Llavero"
@@ -101,10 +101,6 @@ class Llavero(models.Model):
 
         if not self.codigo_activacion:
             self.codigo_activacion = self.generar_codigo_activacion()
-
-        # Asegurar que el estado es NUEVO para nuevos llaveros
-        if not self.mascota:
-            self.estado = "NUEVO"
 
         # Guardar nuevamente con los valores generados
         super().save(*args, **kwargs)
