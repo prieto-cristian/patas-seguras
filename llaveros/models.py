@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import ImageField, ForeignKey, CASCADE, BooleanField
-from django.db.models.fields import (CharField, EmailField,
-                                     PositiveIntegerField,
+from django.db.models.fields import (CharField, PositiveIntegerField,
                                      DateTimeField)
 import hashlib
 import secrets
@@ -28,11 +27,8 @@ class Llavero(models.Model):
     ''' relacion con mascota es PROTECT porque no quiero eliminar el llavero
     cuando se desvincula una mascota. '''
 
-    ESTADOS = [
-        ("NUEVO", "Nuevo"),
-        ("VINCULADO", "Vinculado"),
-        ("EXPIRO", "Expiró"),
-    ]
+    ESTADOS = [("NUEVO", "Nuevo"),("VINCULADO", "Vinculado"),
+               ("EXPIRO", "Expiró"),]
 
     mascota = models.ForeignKey(
         'Mascota',

@@ -158,3 +158,20 @@ class MascotaDetailView(DetailView):
     def get_queryset(self):
         mascota = get_object_or_404(Mascota, llaveros__identificador_publico=self.kwargs["slug"])
         return mascota
+
+
+class LlaveroListView(ListView):
+    model = Llavero
+    context_object_name = "llaveros"
+    template_name = "listar_llaveros.html"
+
+    def get_queryset(self):
+        return Llavero.objects.filter(usuario=self.request.user)
+
+
+class LlaveroUpdateView(UpdateView):
+    model = Llavero
+    template_name = "modificar_llavero.html"
+    form_class = LlaveroForm
+    slug_field = "identificador_publico"
+    slug_url_kwarg = "slug"

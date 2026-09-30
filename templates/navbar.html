@@ -3,7 +3,7 @@
         <ul class="nav nav-pills">
             <li class="nav-item"><a href="{% url 'inicio' %}" class="nav-link active" aria-current="page">Inicio</a></li>
             {% if user.is_authenticated %}
-            <li class="nav-item"><a href="#" class="nav-link">Llaveros</a></li>
+            <li class="nav-item"><a href="{% url 'listar_llaveros' %}" class="nav-link">Llaveros</a></li>
             <li class="nav-item"><a href="{% url 'listar_mascotas' %}" class="nav-link">Mascotas</a></li>
             <li class="nav-item"><a href="{% url 'modificar_usuario' user.pk %}" class="nav-link">Perfil</a></li>
             <li class="nav-item"><a href="{% url 'cerrar_sesion' %}" class="nav-link">Cerrar sesion</a></li>

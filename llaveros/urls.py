@@ -1,7 +1,10 @@
 from django.urls import path
+from django.utils.functional import new_method_proxy
+
 from .views import (inicio, UsuarioUpdateView, MascotaListView,
                     MascotaCreateView, MascotaUpdateView, LlaveroView,
-                    LlaveroVincularView, MensajeLlaveroExitosoView, MascotaDetailView)
+                    LlaveroVincularView, MensajeLlaveroExitosoView, MascotaDetailView,
+                    LlaveroListView, LlaveroUpdateView)
 
 urlpatterns = [
     path("", inicio, name='inicio'),
@@ -13,5 +16,7 @@ urlpatterns = [
     path("llavero/<slug:slug>/", LlaveroView.as_view(), name="mostrar_llavero"),
     path("llavero/vincular/<slug:slug>/", LlaveroVincularView.as_view(), name="registrar_llavero"),
     path("llavero/vincular/exito", MensajeLlaveroExitosoView.as_view(), name="registro_llavero_exitoso"),
-    path("mascotas/mascota/<slug:slug>/", MascotaDetailView.as_view(), name="informacion_mascota")
+    path("mascotas/mascota/<slug:slug>/", MascotaDetailView.as_view(), name="informacion_mascota"),
+    path("llaveros/", LlaveroListView.as_view(), name="listar_llaveros"),
+    path("llaveros/llavero/modificar/<slug:slug>", LlaveroUpdateView.as_view(), name="modificar_llavero"),
 ]
