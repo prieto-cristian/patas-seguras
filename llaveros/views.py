@@ -113,7 +113,8 @@ class LlaveroView(View):
 class LlaveroVincularView(View):
 
     def get(self, request, **kwargs):
-        llavero = get_object_or_404(Llavero,identificador_publico=kwargs['slug'])
+        llavero = get_object_or_404(Llavero,identificador_publico=kwargs['slug'],
+                                    estado="NUEVO", usuario=None)
 
         form = LlaveroFormActivacion()
 
@@ -152,9 +153,8 @@ class MensajeLlaveroExitosoView(TemplateView):
 class MascotaDetailView(DetailView):
     template_name = "mostrar_informacion_mascota.html"
     model = Mascota
+    context_object_name = "mascota"
 
     def get_queryset(self):
-        mascota = get_object_or_404(Mascota, llaveros_identificador_publico=self.kwargs["slug"])
-        if not mascota:
-            return HttpResponseNotFound("NO SE ENCONTRO A LA MASCOTA")
-        return None
+        mascota = get_object_or_404(Mascota, llaveros__identificador_publico=self.kwargs["slug"])
+        return mascota
