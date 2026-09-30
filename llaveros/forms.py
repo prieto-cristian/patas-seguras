@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
-from .models import Mascota
+from .models import Mascota, Llavero
 
 class UsuarioRegistroForm(UserCreationForm):
     class Meta:
@@ -51,3 +51,9 @@ class UsuarioUpdateForm(UserChangeForm):
         if commit:
             user.save()
         return user
+
+
+class LlaveroForm(forms.ModelForm):
+    class Meta:
+        model = Llavero
+        fields = ("mascota",)

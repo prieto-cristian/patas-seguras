@@ -32,8 +32,6 @@ class Llavero(models.Model):
         ("NUEVO", "Nuevo"),
         ("VINCULADO", "Vinculado"),
         ("EXPIRO", "Expiró"),
-        ("DESVINCULADO", "Desvinculado"),
-        ("SIN_MASCOTA", "Sin mascota"),
     ]
 
     mascota = models.ForeignKey(

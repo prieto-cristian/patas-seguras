@@ -1,13 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DetailView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView
+from django.views import View
 from django.contrib.auth.views import FormView
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm
+from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm
 from .models import Mascota, Llavero
 
 # Create your views here.
@@ -80,8 +82,36 @@ def cerrar_sesion(request):
     return redirect("inicio")
 
 
-class LlaveroDetailView(DetailView):
-    model = Llavero
-    template_name = "llavero_detalle.html"
-    context_object_name = "llavero"
-    slug_field = 'identificador_publico'
+class LlaveroView(View):
+
+    def get(self, request, *args, **kwargs):
+        llavero = get_object_or_404(
+            Llavero,
+            identificador_publico=kwargs["slug"] )
+
+        match llavero.estado:
+            case "NUEVO":
+                if request.user.is_authenticated:
+                    return redirect("registrar_llavero",
+                                    slug=llavero.identificador_publico)
+                return redirect("login")
+
+            case "VINCULADO":
+                return redirect("informacion_mascota",
+                                slug=llavero.identificador_publico)
+
+            case "EXPIRO":
+                return redirect("llavero_expiro")
+
+            case "SIN_MASCOTA":
+                return redirect("llavero_sin_mascota")
+        return Http404("No se encontro")
+
+
+class LlaveroVincularView(TemplateView):
+    template_name = 'vincular_llavero.html'
+
+    def post(self, slug):
+        llavero = get_object_or_404(Llavero, identificador_publico=slug)
+        print(f"LLAVERO: {llavero}")
+        pass
