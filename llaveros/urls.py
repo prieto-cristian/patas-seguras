@@ -1,6 +1,5 @@
 from django.urls import path
-
-from .views import (inicio, UsuarioUpdateView, MascotaListView,
+from .views import (inicio, MascotaListView,
                     MascotaCreateView, MascotaUpdateView, LlaveroView,
                     LlaveroVincularView, MensajeLlaveroExitosoView, MascotaDetailView,
                     LlaveroListView, LlaveroUpdateView)

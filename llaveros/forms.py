@@ -1,56 +1,44 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
-from .models import Mascota, Llavero
+from django.core.exceptions import ValidationError
+
+from .models import Mascota, Llavero, Direccion, Perfil
 
 class UsuarioRegistroForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "password1", "password2")
+        fields = ("username", "first_name", "last_name", "email")
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Este correo electrónico ya está registrado.")
+        return email
+
+
+class UsuarioUpdateForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ("username", "first_name", "last_name")
+
+
+class DireccionForm(forms.ModelForm):
+    class Meta:
+        model = Direccion
+        fields = ("localidad", "calle", "numero")
+
+
+class RedesSocialesForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ("facebook", "instagram", "telefono", "whatsapp")
 
 
 class MascotaForm(forms.ModelForm):
     class Meta:
         model = Mascota
         fields = ("nombre", "imagen", "usuario")
-
-
-class UsuarioUpdateForm(UserChangeForm):
-    password = forms.CharField(
-        label='Cambiar contraseña (dejar en blanco para no cambiar)',
-        required=False,
-        widget=forms.PasswordInput(),
-        help_text="Dejar vacío si no deseas cambiar la contraseña"
-    )
-
-    class Meta:
-        model = User
-        fields = ("username", "first_name", "last_name")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Elimina el campo de password predeterminado de UserChangeForm
-        if 'password' in self.fields:
-            del self.fields['password']
-
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if password:
-            # Validaciones básicas de contraseña
-            if len(password) < 8:
-                raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres")
-        return password
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data.get('password')
-
-        if password:
-            user.set_password(password)
-
-        if commit:
-            user.save()
-        return user
 
 
 class LlaveroForm(forms.ModelForm):

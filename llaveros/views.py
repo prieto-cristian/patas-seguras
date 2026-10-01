@@ -1,6 +1,3 @@
-from math import trunc
-
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -12,8 +9,10 @@ from django.contrib.auth.views import FormView
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm, LlaveroFormActivacion
-from .models import Mascota, Llavero
+from .forms import (UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm,
+                    LlaveroForm, LlaveroFormActivacion, DireccionForm,
+                    RedesSocialesForm)
+from .models import Mascota, Llavero, Perfil, Direccion
 
 # Create your views here.
 
@@ -24,7 +23,7 @@ def inicio(request):
 class UsuarioUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UsuarioUpdateForm
-    template_name = 'usuario_modificacion.html'
+    template_name = 'configuracion_perfil.html'
     success_url = reverse_lazy('listar_mascotas')
     login_url = 'login'  # Redirige a login si no está autenticado
 
@@ -59,13 +58,17 @@ class MascotaUpdateView(UpdateView):
     success_url = reverse_lazy("listar_mascotas")
 
 
-class RegistraseView(FormView):
+class RegistrarseView(FormView):
     form_class = UsuarioRegistroForm
     template_name = "registrarse.html"
-    success_url = reverse_lazy("listar_mascotas")
+    success_url = reverse_lazy("crear_perfil")
 
     def form_valid(self, form: UsuarioRegistroForm):
         user = form.save()
+        user.email = form.cleaned_data['email']
+        user.save()
+        perfil= Perfil.objects.create(usuario=user)
+        Direccion.objects.create(perfil=perfil)
         login(self.request, user)
         return super().form_valid(form)
 
@@ -175,3 +178,23 @@ class LlaveroUpdateView(UpdateView):
     form_class = LlaveroForm
     slug_field = "identificador_publico"
     slug_url_kwarg = "slug"
+
+
+class DireccionUpdateView(UpdateView):
+    model = Direccion
+    form_class = DireccionForm
+    template_name = "configuracion_direccion.html"
+    success_url = reverse_lazy("inicio")
+
+    def get_queryset(self):
+        return Direccion.objects.filter(pk=self.kwargs['pk'], perfil__usuario=self.request.user)
+
+
+class RedesUpdateView(UpdateView):
+    model = Perfil
+    form_class = RedesSocialesForm
+    template_name = "configuracion_redes_sociales.html"
+    success_url = reverse_lazy("inicio")
+
+    def get_queryset(self):
+        return Perfil.objects.filter(pk=self.kwargs["pk"], usuario=self.request.user)
