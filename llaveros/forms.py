@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from .models import Mascota, Llavero, Direccion
+from .models import Mascota, Llavero, Direccion, Perfil
 
 class UsuarioRegistroForm(UserCreationForm):
     class Meta:
@@ -27,6 +27,12 @@ class DireccionForm(forms.ModelForm):
     class Meta:
         model = Direccion
         fields = ("localidad", "calle", "numero")
+
+
+class RedesSocialesForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ("facebook", "instagram", "telefono", "whatsapp")
 
 
 class MascotaForm(forms.ModelForm):

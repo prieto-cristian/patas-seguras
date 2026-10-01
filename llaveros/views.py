@@ -10,7 +10,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from .forms import (UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm,
-                    LlaveroForm, LlaveroFormActivacion, DireccionForm)
+                    LlaveroForm, LlaveroFormActivacion, DireccionForm,
+                    RedesSocialesForm)
 from .models import Mascota, Llavero, Perfil, Direccion
 
 # Create your views here.
@@ -187,3 +188,13 @@ class DireccionUpdateView(UpdateView):
 
     def get_queryset(self):
         return Direccion.objects.filter(pk=self.kwargs['pk'], perfil__usuario=self.request.user)
+
+
+class RedesUpdateView(UpdateView):
+    model = Perfil
+    form_class = RedesSocialesForm
+    template_name = "configuracion_redes_sociales.html"
+    success_url = reverse_lazy("inicio")
+
+    def get_queryset(self):
+        return Perfil.objects.filter(pk=self.kwargs["pk"], usuario=self.request.user)

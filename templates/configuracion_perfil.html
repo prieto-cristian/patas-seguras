@@ -4,7 +4,7 @@
 <ul>
     <a href="{% url 'modificar_usuario' user.pk %}">Perfil</a>
     <a href="{% url 'modificar_direccion' user.perfil.direccion.pk %}">Direccion</a>
-    <a href="#">Redes Sociales</a>
+    <a href="{% url 'modificar_redes_contacto' user.perfil.pk %}">Redes Sociales</a>
 </ul>
 <div>
     <h2>Editar mi perfil</h2>
