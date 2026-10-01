@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Perfil(models.Model):
     usuario = OneToOneField(User, on_delete=CASCADE, related_name="perfil")
-    email = EmailField(unique=True, blank=False, null=False, max_length=80)
     telefono = CharField(max_length=254, blank=True)
     facebook = CharField(max_length=254, blank=True)
     instagram = CharField(max_length=254, blank=True)

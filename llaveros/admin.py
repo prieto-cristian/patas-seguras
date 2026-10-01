@@ -1,7 +1,6 @@
 # admin.py
 from django.contrib import admin
-from django.utils.html import format_html
-from .models import Llavero
+from .models import Llavero, Perfil
 
 
 @admin.register(Llavero)
@@ -25,3 +24,6 @@ class LlaverosAdmin(admin.ModelAdmin):
         "mascota",
     )
     ordering = ["-fecha_creacion"]
+
+
+admin.site.register(Perfil)

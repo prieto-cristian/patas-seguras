@@ -1,13 +1,20 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 from .models import Mascota, Llavero
 
 class UsuarioRegistroForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "password1", "password2")
+        fields = ("username", "first_name", "last_name", "email")
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Este correo electrónico ya está registrado.")
+        return email
 
 class MascotaForm(forms.ModelForm):
     class Meta:
