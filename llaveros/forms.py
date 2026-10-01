@@ -38,7 +38,7 @@ class RedesSocialesForm(forms.ModelForm):
 class MascotaForm(forms.ModelForm):
     class Meta:
         model = Mascota
-        fields = ("nombre", "imagen", "usuario")
+        fields = ("nombre", "imagen")
 
 
 class LlaveroForm(forms.ModelForm):

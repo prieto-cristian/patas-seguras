@@ -24,7 +24,6 @@ class Direccion(models.Model):
 
 
 class Mascota(models.Model):
-    usuario = ForeignKey(User, on_delete=CASCADE, related_name="mascotas")
     nombre = CharField(max_length=50)
     imagen = ImageField(max_length=254, blank=True)
     sePerdio = BooleanField(default=False)
@@ -37,12 +36,11 @@ class Llavero(models.Model):
     ESTADOS = [("NUEVO", "Nuevo"),("VINCULADO", "Vinculado"),
                ("EXPIRO", "Expiró"),]
 
-    mascota = models.ForeignKey(
-        'Mascota',
+    mascota = models.OneToOneField(Mascota,
         on_delete=models.PROTECT,
-        related_name="llaveros",
+        related_name="llavero",
         null=True,
-        blank=True  # Importante para el admin
+        blank=True
     )
     codigo_activacion = models.CharField(
         max_length=254,

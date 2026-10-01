@@ -10,12 +10,11 @@ class LlaverosAdmin(admin.ModelAdmin):
         "identificador_publico",
         "estado",
         "codigo_activacion",
-        "mascota__usuario__username",
         "fecha_creacion"
     )
-    list_filter = ("estado", "mascota__usuario")
+    list_filter = ("estado",)
     search_fields = ("identificador_publico", "codigo_activacion",
-                     "mascota__usuario__username", "fecha_creacion")
+                     "fecha_creacion")
     readonly_fields = (
         "pk",
         "identificador_publico",

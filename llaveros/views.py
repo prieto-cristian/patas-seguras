@@ -1,16 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.views import View
 from django.contrib.auth.views import FormView
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from .forms import (UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm,
-                    LlaveroForm, LlaveroFormActivacion, DireccionForm,
+                    LlaveroFormActivacion, DireccionForm,
                     RedesSocialesForm)
 from .models import Mascota, Llavero, Perfil, Direccion
 
@@ -38,30 +38,43 @@ class UsuarioUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class MascotaListView(ListView):
-    model = Mascota
-    template_name = "mascota_listado.html"
-    context_object_name = "mascotas"
-
-
 class MascotaCreateView(CreateView):
     model = Mascota
     form_class = MascotaForm
-    template_name = "mascota_formulario.html"
-    success_url = reverse_lazy("listar_mascotas")
+    template_name = "mascota_form.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        self.llavero = get_object_or_404(
+            Llavero,
+            identificador_publico=kwargs["slug"],
+            usuario=request.user
+        )
 
-class MascotaUpdateView(UpdateView):
-    model = Mascota
-    form_class = MascotaForm
-    template_name = "mascota_modificacion.html"
-    success_url = reverse_lazy("listar_mascotas")
+        if self.llavero.mascota is not None:
+            return redirect(
+                "configurar_llavero",
+                slug=self.llavero.identificador_publico
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        mascota = form.save()
+
+        self.llavero.mascota = mascota
+        self.llavero.estado = "VINCULADO"
+        self.llavero.save()
+
+        return redirect(
+            "configurar_llavero",
+            slug=self.llavero.identificador_publico
+        )
 
 
 class RegistrarseView(FormView):
     form_class = UsuarioRegistroForm
     template_name = "registrarse.html"
-    success_url = reverse_lazy("crear_perfil")
+    success_url = reverse_lazy("inicio")
 
     def form_valid(self, form: UsuarioRegistroForm):
         user = form.save()
@@ -91,26 +104,26 @@ def cerrar_sesion(request):
 class LlaveroView(View):
 
     def get(self, request, *args, **kwargs):
-        llavero = get_object_or_404(
-            Llavero,
-            identificador_publico=kwargs["slug"] )
+        llavero = get_object_or_404(Llavero,
+                                    identificador_publico=kwargs["slug"])
 
         match llavero.estado:
             case "NUEVO":
                 if request.user.is_authenticated:
                     return redirect("registrar_llavero",
                                     slug=llavero.identificador_publico)
-                return redirect("login")
+                return render(request, "mensaje_registrese_inicie_sesion.html")
 
             case "VINCULADO":
-                return redirect("informacion_mascota",
-                                slug=llavero.identificador_publico)
+                if llavero.mascota:
+                    return render(request, "llavero_publico.html", {
+                        'llavero': llavero,
+                    })
+                return HttpResponseNotFound("No encontramos el llavero")
 
             case "EXPIRO":
                 return redirect("llavero_expiro")
 
-            case "SIN_MASCOTA":
-                return redirect("llavero_sin_mascota")
         return HttpResponseNotFound("No se encontro")
 
 class LlaveroVincularView(View):
@@ -139,7 +152,7 @@ class LlaveroVincularView(View):
                 llavero.estado = "VINCULADO"
                 llavero.save()
 
-                return redirect("registro_llavero_exitoso")
+                return render(request, "registro_llavero_exitoso.html")
 
         return render(request,"vincular_llavero.html",{
                 "form": form,
@@ -149,20 +162,6 @@ class LlaveroVincularView(View):
         })
 
 
-class MensajeLlaveroExitosoView(TemplateView):
-    template_name = "mensaje_llavero_vinculado.html"
-
-
-class MascotaDetailView(DetailView):
-    template_name = "mostrar_informacion_mascota.html"
-    model = Mascota
-    context_object_name = "mascota"
-
-    def get_queryset(self):
-        mascota = get_object_or_404(Mascota, llaveros__identificador_publico=self.kwargs["slug"])
-        return mascota
-
-
 class LlaveroListView(ListView):
     model = Llavero
     context_object_name = "llaveros"
@@ -170,14 +169,6 @@ class LlaveroListView(ListView):
 
     def get_queryset(self):
         return Llavero.objects.filter(usuario=self.request.user)
-
-
-class LlaveroUpdateView(UpdateView):
-    model = Llavero
-    template_name = "modificar_llavero.html"
-    form_class = LlaveroForm
-    slug_field = "identificador_publico"
-    slug_url_kwarg = "slug"
 
 
 class DireccionUpdateView(UpdateView):
@@ -198,3 +189,41 @@ class RedesUpdateView(UpdateView):
 
     def get_queryset(self):
         return Perfil.objects.filter(pk=self.kwargs["pk"], usuario=self.request.user)
+
+
+class LlaveroConfiguracionView(DetailView):
+    model = Llavero
+    slug_field = "identificador_publico"
+    template_name = "llavero_configuracion.html"
+    context_object_name = "llavero"
+
+    def get_queryset(self):
+        return Llavero.objects.filter(usuario=self.request.user)
+
+
+class MascotaUpdateView(UpdateView):
+    model = Mascota
+    form_class = MascotaForm
+    template_name = "mascota_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.llavero = get_object_or_404(
+            Llavero,
+            identificador_publico=kwargs["slug"],
+            usuario=request.user
+        )
+
+        if self.llavero.mascota is None:
+            return redirect("configurar_llavero",
+                slug=self.llavero.identificador_publico)
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.llavero.mascota
+
+    def form_valid(self, form):
+        form.save()
+
+        return redirect("configurar_llavero",
+                        slug=self.llavero.identificador_publico)

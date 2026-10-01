@@ -3,7 +3,9 @@
 <h1>Llaveros</h1>
 <ul>
     {% for llavero in llaveros %}
-    <li>Llavero {{ llavero.pk }}: {% if llavero.mascota %} Mascota: {{ llavero.mascota.nombre }} {% else %} No tiene mascota asociada {% endif %}<a href="{% url 'modificar_llavero' llavero.identificador_publico %}">Editar</a></li>
+    <li>Llavero {{ llavero.pk }}: {% if llavero.mascota %} Mascota: {{ llavero.mascota.nombre }} {% else %} No tiene mascota asociada {% endif %}<a href="{% url 'configurar_llavero' llavero.identificador_publico %}">
+    Configurar
+</a></li>
     {% empty %}
     <p>El usuario no tiene llaveros registrados</p>
     {% endfor %}
