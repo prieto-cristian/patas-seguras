@@ -8,9 +8,9 @@
 
 <h2>Enlace público</h2>
 
-<p>
+<a href="{% url 'mostrar_llavero' llavero.identificador_publico %}">
     {{ request.scheme }}://{{ request.get_host }}{% url 'mostrar_llavero' llavero.identificador_publico %}
-</p>
+</a>
 
 <hr>
 

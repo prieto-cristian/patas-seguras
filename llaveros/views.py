@@ -115,8 +115,10 @@ class LlaveroView(View):
                 return render(request, "mensaje_registrese_inicie_sesion.html")
 
             case "VINCULADO":
-                return redirect("informacion_mascota",
-                                slug=llavero.identificador_publico)
+                if llavero.mascota:
+                    return render(request, "llavero_publico.html", {
+                        'llavero': llavero,
+                    })
 
             case "EXPIRO":
                 return redirect("llavero_expiro")

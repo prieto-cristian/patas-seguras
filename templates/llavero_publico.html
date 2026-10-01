@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% block contenido %}
+<h1>Informacion de la mascota</h1>
+<h2>{{ llavero.mascota.nombre }}</h2>
+<p>Puedes comunicarte con mi duenio por los siguientes medios:</p>
+<ul>
+    <a href="{{ llavero.perfil.facebook }}">Facebook</a>
+    <a href="{{ llavero.perfil.instagram }}">Instagram</a>
+</ul>
+{% endblock contenido %}
