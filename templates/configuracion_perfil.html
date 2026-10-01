@@ -1,6 +1,11 @@
 {% extends 'index.html' %}
 
 {% block contenido %}
+<ul>
+    <a href="{% url 'modificar_usuario' user.pk %}">Perfil</a>
+    <a href="#">Direccion</a>
+    <a href="#">Redes Sociales</a>
+</ul>
 <div>
     <h2>Editar mi perfil</h2>
 

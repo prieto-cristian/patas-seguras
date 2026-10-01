@@ -21,7 +21,7 @@ def inicio(request):
 class UsuarioUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UsuarioUpdateForm
-    template_name = 'usuario_modificacion.html'
+    template_name = 'configuracion_perfil.html'
     success_url = reverse_lazy('listar_mascotas')
     login_url = 'login'  # Redirige a login si no está autenticado
 
