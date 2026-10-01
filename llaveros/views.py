@@ -9,7 +9,8 @@ from django.contrib.auth.views import FormView
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm, LlaveroFormActivacion
+from .forms import (UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm,
+                    LlaveroForm, LlaveroFormActivacion, DireccionForm)
 from .models import Mascota, Llavero, Perfil, Direccion
 
 # Create your views here.
@@ -176,3 +177,13 @@ class LlaveroUpdateView(UpdateView):
     form_class = LlaveroForm
     slug_field = "identificador_publico"
     slug_url_kwarg = "slug"
+
+
+class DireccionUpdateView(UpdateView):
+    model = Direccion
+    form_class = DireccionForm
+    template_name = "configuracion_direccion.html"
+    success_url = reverse_lazy("inicio")
+
+    def get_queryset(self):
+        return Direccion.objects.filter(pk=self.kwargs['pk'], perfil__usuario=self.request.user)

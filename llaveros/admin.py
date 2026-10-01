@@ -26,5 +26,9 @@ class LlaverosAdmin(admin.ModelAdmin):
     ordering = ["-fecha_creacion"]
 
 
+class DireccionAdmin(admin.ModelAdmin):
+    model = Direccion
+    list_display = ("pk", "perfil__usuario__username", "localidad", "calle", "numero")
+
 admin.site.register(Perfil)
-admin.site.register(Direccion)
+admin.site.register(Direccion, DireccionAdmin)

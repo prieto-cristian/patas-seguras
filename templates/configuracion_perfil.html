@@ -3,7 +3,7 @@
 {% block contenido %}
 <ul>
     <a href="{% url 'modificar_usuario' user.pk %}">Perfil</a>
-    <a href="#">Direccion</a>
+    <a href="{% url 'modificar_direccion' user.perfil.direccion.pk %}">Direccion</a>
     <a href="#">Redes Sociales</a>
 </ul>
 <div>
