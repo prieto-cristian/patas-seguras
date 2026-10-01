@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+{% block contenido %}
+<ul>
+    <a href="{% url 'modificar_usuario' user.pk %}">Perfil</a>
+    <a href="{% url 'modificar_direccion' user.perfil.direccion.pk %}">Direccion</a>
+    <a href="{% url 'modificar_redes_contacto' user.perfil.pk %}">Redes Sociales</a>
+</ul>
+<h1>Dirección de contacto</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Guardar</button>
+</form>
+{% endblock contenido %}

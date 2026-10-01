@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from llaveros.views import (RegistrarseView, IniciarSesionView, cerrar_sesion,
-                            UsuarioUpdateView)
+                            UsuarioUpdateView, DireccionUpdateView,
+                            RedesUpdateView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +27,7 @@ urlpatterns = [
     path("iniciar_sesion/", IniciarSesionView.as_view(), name="iniciar_sesion"),
     path("cerrar_sesion/", cerrar_sesion, name="cerrar_sesion"),
     path('configuracion/usuario/<pk>/', UsuarioUpdateView.as_view(), name="modificar_usuario"),
+    path('configuracion/direccion/<pk>/', DireccionUpdateView.as_view(), name="modificar_direccion"),
+    path('configuracion/redes_sociales/<pk>/', RedesUpdateView.as_view(),
+         name="modificar_redes_contacto"),
 ]
