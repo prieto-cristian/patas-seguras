@@ -1,19 +1,26 @@
 from django.db import models
-from django.db.models import ImageField, ForeignKey, CASCADE, BooleanField
-from django.db.models.fields import (CharField, PositiveIntegerField,
-                                     DateTimeField)
+from django.db.models import (ImageField, ForeignKey, CASCADE, BooleanField,
+                              OneToOneField, CharField, DateTimeField)
 import hashlib
 import secrets
 from django.contrib.auth.models import User
 
 
 # Create your models here.
+class Perfil(models.Model):
+    usuario = OneToOneField(User, on_delete=CASCADE, related_name="perfil")
+    telefono = CharField(max_length=254, blank=True)
+    facebook = CharField(max_length=254, blank=True)
+    instagram = CharField(max_length=254, blank=True)
+    whatsapp = CharField(max_length=254, blank=True)
+
+
+
 class Direccion(models.Model):
-    usuario = ForeignKey(User, on_delete=CASCADE,
-                         related_name="direcciones")
+    perfil = OneToOneField(Perfil, on_delete=CASCADE, related_name="direccion")
     localidad = CharField(max_length=50)
     calle = CharField(max_length=100)
-    numero = PositiveIntegerField()
+    numero = CharField(max_length=14)
 
 
 class Mascota(models.Model):

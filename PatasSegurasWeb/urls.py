@@ -16,13 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from llaveros.views import RegistraseView, IniciarSesionView, cerrar_sesion
+from llaveros.views import (RegistrarseView, IniciarSesionView, cerrar_sesion,
+                            UsuarioUpdateView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("llaveros.urls")),
-    path("registrarse/", RegistraseView.as_view(), name="registrarse"),
+    path("registrarse/", RegistrarseView.as_view(), name="registrarse"),
     path("iniciar_sesion/", IniciarSesionView.as_view(), name="iniciar_sesion"),
     path("cerrar_sesion/", cerrar_sesion, name="cerrar_sesion"),
-
+    path('configuracion/usuario/<pk>/', UsuarioUpdateView.as_view(), name="modificar_usuario"),
 ]

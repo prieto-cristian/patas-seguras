@@ -1,13 +1,20 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 from .models import Mascota, Llavero
 
 class UsuarioRegistroForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "password1", "password2")
+        fields = ("username", "first_name", "last_name", "email")
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Este correo electrónico ya está registrado.")
+        return email
 
 class MascotaForm(forms.ModelForm):
     class Meta:
@@ -16,41 +23,11 @@ class MascotaForm(forms.ModelForm):
 
 
 class UsuarioUpdateForm(UserChangeForm):
-    password = forms.CharField(
-        label='Cambiar contraseña (dejar en blanco para no cambiar)',
-        required=False,
-        widget=forms.PasswordInput(),
-        help_text="Dejar vacío si no deseas cambiar la contraseña"
-    )
-
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name")
+        fields = ("username", "first_name", "last_name", "password")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Elimina el campo de password predeterminado de UserChangeForm
-        if 'password' in self.fields:
-            del self.fields['password']
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if password:
-            # Validaciones básicas de contraseña
-            if len(password) < 8:
-                raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres")
-        return password
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data.get('password')
-
-        if password:
-            user.set_password(password)
-
-        if commit:
-            user.save()
-        return user
 
 
 class LlaveroForm(forms.ModelForm):
