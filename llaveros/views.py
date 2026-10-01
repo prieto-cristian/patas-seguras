@@ -1,16 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.views import View
 from django.contrib.auth.views import FormView
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from .forms import (UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm,
-                    LlaveroForm, LlaveroFormActivacion, DireccionForm,
+                    LlaveroFormActivacion, DireccionForm,
                     RedesSocialesForm)
 from .models import Mascota, Llavero, Perfil, Direccion
 
@@ -119,6 +119,7 @@ class LlaveroView(View):
                     return render(request, "llavero_publico.html", {
                         'llavero': llavero,
                     })
+                return HttpResponseNotFound("No encontramos el llavero")
 
             case "EXPIRO":
                 return redirect("llavero_expiro")
@@ -213,10 +214,8 @@ class MascotaUpdateView(UpdateView):
         )
 
         if self.llavero.mascota is None:
-            return redirect(
-                "configurar_llavero",
-                slug=self.llavero.identificador_publico
-            )
+            return redirect("configurar_llavero",
+                slug=self.llavero.identificador_publico)
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -226,7 +225,5 @@ class MascotaUpdateView(UpdateView):
     def form_valid(self, form):
         form.save()
 
-        return redirect(
-            "configurar_llavero",
-            slug=self.llavero.identificador_publico
-        )
+        return redirect("configurar_llavero",
+                        slug=self.llavero.identificador_publico)
