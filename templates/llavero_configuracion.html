@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+{% block contenido %}
+<h1>Configurar llavero</h1>
+
+<p>
+    Estado: {{ llavero.get_estado_display }}
+</p>
+
+<h2>Enlace público</h2>
+
+<p>
+    {{ request.scheme }}://{{ request.get_host }}{% url 'mostrar_llavero' llavero.identificador_publico %}
+</p>
+
+<hr>
+
+<h2>Mascota</h2>
+
+{% if llavero.mascota %}
+
+    <p>
+        Nombre: {{ llavero.mascota.nombre }}
+    </p>
+
+    <a href="{% url 'modificar_mascota_llavero' llavero.identificador_publico %}">
+        Modificar mascota
+    </a>
+
+{% else %}
+
+    <p>
+        Este llavero todavía no tiene una mascota asociada.
+    </p>
+
+    <a href="{% url 'crear_mascota_llavero' llavero.identificador_publico %}">
+        Crear mascota
+    </a>
+
+{% endif %}
+{% endblock contenido %}
