@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% block iniciar_sesion %}
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button>Iniciar sesion</button>
+</form>
+{% endblock iniciar_sesion %}

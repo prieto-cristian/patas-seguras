@@ -1,0 +1,10 @@
+{% extends 'index.html' %}
+{% block vincular_llavero %}
+    <h1>VINCULAR LLAVERO</h1>
+    {{ error }}
+    <form action="{% url 'registrar_llavero' slug %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button>Vincular</button>
+    </form>
+{% endblock vincular_llavero %}

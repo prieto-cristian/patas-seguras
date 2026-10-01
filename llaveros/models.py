@@ -1,20 +1,15 @@
 from django.db import models
-from django.db.models import ImageField, ForeignKey, CASCADE
-from django.db.models.fields import (CharField, EmailField,
-                                     PositiveIntegerField, DateField,
+from django.db.models import ImageField, ForeignKey, CASCADE, BooleanField
+from django.db.models.fields import (CharField, PositiveIntegerField,
                                      DateTimeField)
+import hashlib
+import secrets
+from django.contrib.auth.models import User
 
 
 # Create your models here.
-class Usuario(models.Model):
-    nombre = CharField(max_length=50)
-    apellido = CharField(max_length=50)
-    email = EmailField(unique=True)
-    telefono = CharField(max_length=50)
-
-
 class Direccion(models.Model):
-    usuario = ForeignKey(Usuario, on_delete=CASCADE,
+    usuario = ForeignKey(User, on_delete=CASCADE,
                          related_name="direcciones")
     localidad = CharField(max_length=50)
     calle = CharField(max_length=100)
@@ -22,24 +17,89 @@ class Direccion(models.Model):
 
 
 class Mascota(models.Model):
-    usuario = ForeignKey(Usuario, on_delete=CASCADE, related_name="mascotas")
+    usuario = ForeignKey(User, on_delete=CASCADE, related_name="mascotas")
     nombre = CharField(max_length=50)
     imagen = ImageField(max_length=254, blank=True)
-    estado = CharField(max_length=50)
-
-
-class Vacuna(models.Model):
-    mascota = ForeignKey(Mascota, on_delete=CASCADE, related_name="vacunas")
-    nombre = CharField(max_length=100)
-    fecha_inyeccion = DateField()
-    fecha_caduca = DateField()
+    sePerdio = BooleanField(default=False)
 
 
 class Llavero(models.Model):
-    mascota = ForeignKey(Mascota, on_delete=CASCADE, related_name="llaveros")
-    codigo_activacion = CharField(max_length=254, unique=True)
-    estado = CharField(max_length=100)
-    identificador_publico = CharField(max_length=254, unique=True)
+    ''' relacion con mascota es PROTECT porque no quiero eliminar el llavero
+    cuando se desvincula una mascota. '''
+
+    ESTADOS = [("NUEVO", "Nuevo"),("VINCULADO", "Vinculado"),
+               ("EXPIRO", "Expiró"),]
+
+    mascota = models.ForeignKey(
+        'Mascota',
+        on_delete=models.PROTECT,
+        related_name="llaveros",
+        null=True,
+        blank=True  # Importante para el admin
+    )
+    codigo_activacion = models.CharField(
+        max_length=254,
+        unique=True,
+        blank=True  # Se genera automáticamente
+    )
+    estado = models.CharField(
+        max_length=100,
+        default="NUEVO",
+        choices=ESTADOS
+    )
+    identificador_publico = models.CharField(
+        max_length=254,
+        unique=True,
+        blank=True  # Se genera automáticamente
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    usuario = models.ForeignKey(User, null=True, blank=True, on_delete=CASCADE, related_name="llaveros")
+
+    class Meta:
+        verbose_name = "Llavero"
+        verbose_name_plural = "Llaveros"
+
+    def __str__(self):
+        return f"{self.identificador_publico} - {self.estado}"
+
+    def generar_identificador_publico(self):
+        """
+        Genera un identificador público único basado en el pk usando SHA256
+        """
+        if self.pk:
+            hash_object = hashlib.sha256(
+                f"{self.pk}-{self.__class__.__name__}".encode()
+            )
+            return hash_object.hexdigest()[:32]  # Primeros 32 caracteres
+        return None
+
+    def generar_codigo_activacion(self):
+        """
+        Genera un código de activación más corto usando secrets
+        """
+        # Combinamos pk + random para mayor seguridad
+        if self.pk:
+            data = f"{self.pk}-{secrets.token_hex(8)}"
+            hash_object = hashlib.sha256(data.encode())
+            return hash_object.hexdigest()[:10]  # Primeros 10 caracteres
+        return None
+
+    def save(self, *args, **kwargs):
+        # Primera vez que se guarda (creación)
+        if not self.pk:
+            # Guardar primero para obtener el pk
+            super().save(*args, **kwargs)
+
+        # Generar los campos automáticos si están vacíos
+        if not self.identificador_publico:
+            self.identificador_publico = self.generar_identificador_publico()
+
+        if not self.codigo_activacion:
+            self.codigo_activacion = self.generar_codigo_activacion()
+
+        # Guardar nuevamente con los valores generados
+        super().save(*args, **kwargs)
 
 
 class Escaneo(models.Model):

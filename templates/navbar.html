@@ -2,10 +2,15 @@
     <header class="d-flex justify-content-center py-3">
         <ul class="nav nav-pills">
             <li class="nav-item"><a href="{% url 'inicio' %}" class="nav-link active" aria-current="page">Inicio</a></li>
-            <li class="nav-item"><a href="{% url 'listar_usuarios' %}" class="nav-link">Usuarios</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Llaveros</a></li>
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a href="{% url 'listar_llaveros' %}" class="nav-link">Llaveros</a></li>
             <li class="nav-item"><a href="{% url 'listar_mascotas' %}" class="nav-link">Mascotas</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Direcciones</a></li>
+            <li class="nav-item"><a href="{% url 'modificar_usuario' user.pk %}" class="nav-link">Perfil</a></li>
+            <li class="nav-item"><a href="{% url 'cerrar_sesion' %}" class="nav-link">Cerrar sesion</a></li>
+            {% else %}
+            <li class="nav-item"><a href="{% url 'registrarse' %}" class="nav-link">Registrarse</a></li>
+            <li class="nav-item"><a href="{% url 'iniciar_sesion' %}" class="nav-link">Iniciar sesion</a></li>
+            {% endif %}
         </ul>
     </header>
 </div>
