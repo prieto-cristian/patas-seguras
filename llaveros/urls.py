@@ -1,14 +1,11 @@
 from django.urls import path
-from django.utils.functional import new_method_proxy
-
-from .views import (inicio, UsuarioUpdateView, MascotaListView,
+from .views import (inicio, MascotaListView,
                     MascotaCreateView, MascotaUpdateView, LlaveroView,
                     LlaveroVincularView, MensajeLlaveroExitosoView, MascotaDetailView,
                     LlaveroListView, LlaveroUpdateView)
 
 urlpatterns = [
     path("", inicio, name='inicio'),
-    path('usuarios/modificar/<pk>/', UsuarioUpdateView.as_view(), name="modificar_usuario"),
 
     path("mascotas/", MascotaListView.as_view(), name="listar_mascotas"),
     path("mascotas/crear/", MascotaCreateView.as_view(), name="crear_mascota"),
