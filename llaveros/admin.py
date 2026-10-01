@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from .models import Llavero, Perfil
+from .models import Llavero, Perfil, Direccion
 
 
 @admin.register(Llavero)
@@ -27,3 +27,4 @@ class LlaverosAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Perfil)
+admin.site.register(Direccion)

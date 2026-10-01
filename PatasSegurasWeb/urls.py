@@ -23,8 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("llaveros.urls")),
     path("registrarse/", RegistrarseView.as_view(), name="registrarse"),
-    path("registrarse/perfil", RegistrarseView.as_view(), name="crear_perfil"),
     path("iniciar_sesion/", IniciarSesionView.as_view(), name="iniciar_sesion"),
     path("cerrar_sesion/", cerrar_sesion, name="cerrar_sesion"),
-    path('usuarios/modificar/<pk>/', UsuarioUpdateView.as_view(), name="modificar_usuario"),
+    path('configuracion/usuario/<pk>/', UsuarioUpdateView.as_view(), name="modificar_usuario"),
 ]

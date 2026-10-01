@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from .forms import UsuarioRegistroForm, MascotaForm, UsuarioUpdateForm, LlaveroForm, LlaveroFormActivacion
-from .models import Mascota, Llavero, Perfil
+from .models import Mascota, Llavero, Perfil, Direccion
 
 # Create your views here.
 
@@ -65,7 +65,8 @@ class RegistrarseView(FormView):
         user = form.save()
         user.email = form.cleaned_data['email']
         user.save()
-        Perfil.objects.create(usuario=user)
+        perfil= Perfil.objects.create(usuario=user)
+        Direccion.objects.create(perfil=perfil)
         login(self.request, user)
         return super().form_valid(form)
 

@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import (ImageField, ForeignKey, CASCADE, BooleanField,
-                              OneToOneField, EmailField, CharField,
-                              DateTimeField)
+                              OneToOneField, CharField, DateTimeField)
 import hashlib
 import secrets
 from django.contrib.auth.models import User
