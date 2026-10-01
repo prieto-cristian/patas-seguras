@@ -1,5 +1,4 @@
 from django.urls import path
-from django.utils.functional import new_method_proxy
 
 from .views import (inicio, UsuarioUpdateView, MascotaListView,
                     MascotaCreateView, MascotaUpdateView, LlaveroView,
